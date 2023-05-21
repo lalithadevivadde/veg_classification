@@ -26,7 +26,7 @@ CLASS_INDICES = {'Bean': 0,
                  'Radish': 13,
                  'Tomato': 14}
 
-interpreter = lite.Interpreter(model_path=os.path.join("models", "vegetable_classification_model_vgg.tflite"))
+interpreter = lite.Interpreter(model_path=os.path.join("models", "vegetable_classification_model_mnet.tflite"))
 
 
 def predict(test_image):
