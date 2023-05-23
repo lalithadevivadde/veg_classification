@@ -6,7 +6,7 @@ from utils.make_upload_dir import make_upload_dir
 from tensorflow.keras.utils import load_img, save_img, img_to_array
 from numpy import array, round
 from utils.delete_file import delete_file
-import requests
+from requests import get
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
@@ -73,7 +73,7 @@ def file_prediction():
 
         file_url = request.form['fileinput']
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
-        r = requests.get(file_url, headers=headers)
+        r = get(file_url, headers=headers)
         with open(upload_file_path, "wb") as file:
             file.write(r.content)
 
