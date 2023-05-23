@@ -6,10 +6,11 @@ from utils.make_upload_dir import make_upload_dir
 from tensorflow.keras.utils import load_img, save_img, img_to_array
 from numpy import array, round
 from utils.delete_file import delete_file
-
+import requests
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
+
 CLASS_INDICES = {'Bean': 0,
                  'Bitter_Gourd': 1,
                  'Bottle_Gourd': 2,
@@ -35,7 +36,6 @@ def predict(test_image):
     input_details = interpreter.get_input_details()[0]
     output_details = interpreter.get_output_details()[0]
 
-    # test_image = expand_dims(test_image, axis=0).astype(input_details["dtype"])
     test_image = test_image.astype(input_details["dtype"])
     interpreter.set_tensor(input_details["index"], test_image)
     interpreter.invoke()
@@ -66,20 +66,16 @@ def file_prediction():
     result = ''
     error = ""
     try:
-        app.config['UPLOAD_FOLDER'] = os.path.join('.', 'static', 'uploads')
-        make_upload_dir(app.config['UPLOAD_FOLDER'])
+        upload_file_path = os.path.join('.', 'static', 'uploads')
+        make_upload_dir(upload_file_path)
+        upload_filename = "input.jpg"
+        upload_file_path = os.path.join(upload_file_path, upload_filename)
 
-        upload_file = request.files['fileinput']
-        upload_filename = upload_file.filename
-        upload_file_path = os.path.join(app.config['UPLOAD_FOLDER'], upload_filename)
-
-        if upload_filename == "":
-            raise Exception("Please upload an image")
-
-        if not upload_file_path.endswith(".jpg"):
-            raise Exception("Not a JPG image")
-
-        upload_file.save(upload_file_path)
+        file_url = request.form['fileinput']
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
+        r = requests.get(file_url, headers=headers)
+        with open(upload_file_path, "wb") as file:
+            file.write(r.content)
 
         test_image = load_img(upload_file_path, color_mode="rgb", target_size=(224, 224))
         test_image = img_to_array(test_image)
