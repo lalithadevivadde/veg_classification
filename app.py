@@ -9,6 +9,7 @@ from numpy import array, round
 from utils.delete_file import delete_file
 from requests import get
 
+
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
