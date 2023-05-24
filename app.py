@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request
 from flask_cors import cross_origin, CORS
 import tensorflow.lite as lite
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from utils.make_upload_dir import make_upload_dir
 from tensorflow.keras.utils import load_img, save_img, img_to_array
 from numpy import array, round
@@ -79,12 +80,12 @@ def file_prediction():
 
         test_image = load_img(upload_file_path, color_mode="rgb", target_size=(224, 224))
         test_image = img_to_array(test_image)
+        test_image = preprocess_input(test_image)
         test_image = array([test_image])
 
         display_image = os.path.join('.', 'static', 'output', 'display.jpg')
         save_img(path=display_image, x=test_image[0])
 
-        test_image = test_image / 255.
         result = predict(test_image)
         delete_file(upload_file_path)
 
